@@ -1,11 +1,16 @@
 package com.example.userservice.config;
 
 
+import com.example.userservice.controller.UserController;
 import com.example.userservice.security.AuthEntryPointJwt;
 import com.example.userservice.security.AuthTokenFilter;
 import com.example.userservice.security.CustomAccessDeniedHandler;
 import com.example.userservice.service.UserDetailsServiceImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -28,7 +33,14 @@ import java.util.List;
 @Configuration
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @EnableWebSecurity
+//@RefreshScope
 public class WebSecurityConfig {
+
+    @Value("${login-user.api.endpoint}")
+    String login_user__;
+
+    @Value("${create-user.api.endpoint}")
+    String create_user__;
 
     @Autowired
     UserDetailsServiceImpl userDetailsServiceImpl;
@@ -71,9 +83,9 @@ public class WebSecurityConfig {
                 .exceptionHandling().accessDeniedHandler(customAccessDeniedHandler).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeRequests()
-                .antMatchers("/create-user").permitAll()
-                .antMatchers("/login-user").permitAll()
-                .antMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll()
+                .antMatchers(create_user__).permitAll()
+                .antMatchers(login_user__).permitAll()
+//                .antMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll()
                 .anyRequest().authenticated();
 
         http.authenticationProvider(authenticationProvider());
