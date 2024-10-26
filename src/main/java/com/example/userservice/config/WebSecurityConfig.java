@@ -36,10 +36,10 @@ import java.util.List;
 //@RefreshScope
 public class WebSecurityConfig {
 
-    @Value("${login-user.api.endpoint}")
+    @Value("${login-user.api.endpoint:/user/login-user}")
     String login_user__;
 
-    @Value("${create-user.api.endpoint}")
+    @Value("${create-user.api.endpoint:/user/create-user}")
     String create_user__;
 
     @Autowired
@@ -50,6 +50,8 @@ public class WebSecurityConfig {
 
     @Autowired
     private CustomAccessDeniedHandler customAccessDeniedHandler;
+
+    private static final Logger logger = LoggerFactory.getLogger(WebSecurityConfig.class);
 
     @Bean
     public AuthTokenFilter  authenticationJwtTokenFilter() {
@@ -78,6 +80,8 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        logger.info("SecurityFilterChain Crete User - " + create_user__);
+        logger.info("SecurityFilterChain Login User - " + login_user__);
         http.cors().and().csrf().disable()
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
                 .exceptionHandling().accessDeniedHandler(customAccessDeniedHandler).and()
